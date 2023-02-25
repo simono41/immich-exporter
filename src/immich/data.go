@@ -48,9 +48,9 @@ func GetAllUsers(c chan func() (*models.StructAllUsers, error)) {
 	defer wg.Done()
 	resp, err := Apirequest("/api/user?isAll=true", "GET")
 	if err != nil {
+		Auth()
 		if err.Error() == "403" {
 			log.Println("Cookie changed, try to reconnect ...")
-			Auth()
 		} else {
 			if models.GetPromptError() == false {
 				log.Println("Error : ", err)
@@ -81,9 +81,10 @@ func ServerVersion(r *prometheus.Registry) {
 	defer wg.Done()
 	resp, err := Apirequest("/api/server-info/version", "GET")
 	if err != nil {
+		Auth()
 		if err.Error() == "403" {
 			log.Println("Cookie changed, try to reconnect ...")
-			Auth()
+
 		} else {
 			if models.GetPromptError() == false {
 				log.Println("Error : ", err)
@@ -114,9 +115,10 @@ func ServerInfo(c chan func() (*models.StructServerInfo, error)) {
 	defer wg.Done()
 	resp, err := Apirequest("/api/server-info/stats", "GET")
 	if err != nil {
+		Auth()
 		if err.Error() == "403" {
 			log.Println("Cookie changed, try to reconnect ...")
-			Auth()
+
 		} else {
 			if models.GetPromptError() == false {
 				log.Println("Error : ", err)
