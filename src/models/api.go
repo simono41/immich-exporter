@@ -6,8 +6,7 @@ type StructLogin struct {
 	AccessToken          string `json:"accessToken"`
 	UserID               string `json:"userId"`
 	UserEmail            string `json:"userEmail"`
-	FirstName            string `json:"firstName"`
-	LastName             string `json:"lastName"`
+	Name                 string `json:"name"`
 	IsAdmin              bool   `json:"isAdmin"`
 	ShouldChangePassword bool   `json:"shouldChangePassword"`
 }
@@ -17,12 +16,11 @@ type StructServerInfo struct {
 	Videos      int   `json:"videos"`
 	Usage       int64 `json:"usage"`
 	UsageByUser []struct {
-		UserID        string `json:"userId"`
-		UserFirstName string `json:"userFirstName"`
-		UserLastName  string `json:"userLastName"`
-		Photos        int    `json:"photos"`
-		Videos        int    `json:"videos"`
-		Usage         int    `json:"usage"`
+		UserID   string `json:"userId"`
+		UserName string `json:"userName"`
+		Photos   int    `json:"photos"`
+		Videos   int    `json:"videos"`
+		Usage    int    `json:"usage"`
 	} `json:"usageByUser"`
 }
 
@@ -45,8 +43,7 @@ type StructServerVersion struct {
 type StructAllUsers []struct {
 	ID                   string    `json:"id"`
 	Email                string    `json:"email"`
-	FirstName            string    `json:"firstName"`
-	LastName             string    `json:"lastName"`
+	Name                 string    `json:"name"`
 	CreatedAt            time.Time `json:"createdAt"`
 	ProfileImagePath     string    `json:"profileImagePath"`
 	ShouldChangePassword bool      `json:"shouldChangePassword"`
@@ -56,9 +53,38 @@ type StructAllUsers []struct {
 }
 
 type StructCustomUser struct {
-	Email     string
-	ID        string
-	FirstName string
-	LastName  string
-	IsAdmin   bool
+	Email   string
+	ID      string
+	Name    string
+	IsAdmin bool
+}
+
+type StructJobStatus struct {
+	JobCounts struct {
+		Active    int `json:"active"`
+		Completed int `json:"completed"`
+		Failed    int `json:"failed"`
+		Delayed   int `json:"delayed"`
+		Waiting   int `json:"waiting"`
+		Paused    int `json:"paused"`
+	} `json:"jobCounts"`
+	QueueStatus struct {
+		IsActive bool `json:"isActive"`
+		IsPaused bool `json:"isPaused"`
+	} `json:"queueStatus"`
+}
+
+type StructAllJobsStatus struct {
+	ThumbnailGeneration      StructJobStatus `json:"thumbnailGeneration"`
+	MetadataExtraction       StructJobStatus `json:"metadataExtraction"`
+	VideoConversion          StructJobStatus `json:"videoConversion"`
+	ObjectTagging            StructJobStatus `json:"objectTagging"`
+	RecognizeFaces           StructJobStatus `json:"recognizeFaces"`
+	ClipEncoding             StructJobStatus `json:"clipEncoding"`
+	BackgroundTask           StructJobStatus `json:"backgroundTask"`
+	StorageTemplateMigration StructJobStatus `json:"storageTemplateMigration"`
+	Migration                StructJobStatus `json:"migration"`
+	Search                   StructJobStatus `json:"search"`
+	Sidecar                  StructJobStatus `json:"sidecar"`
+	Library                  StructJobStatus `json:"library"`
 }
