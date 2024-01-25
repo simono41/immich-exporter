@@ -1,16 +1,21 @@
-FROM golang:1.21-alpine3.18 AS builder
+FROM golang:1.21-alpine3.19 AS builder
+
+ARG BUILD_VERSION
 
 WORKDIR /app
 
-COPY . .
+COPY src src
 
-RUN go build -o /go/bin/immich-exporter ./src 
+RUN cd src && \
+    if [ -n "${BUILD_VERSION}" ]; then \
+        go build -o /go/bin/immich-exporter -ldflags="-X 'main.Version=${BUILD_VERSION}'" . ; \
+    else \
+        go build -o /go/bin/immich-exporter . ; \
+    fi
 
-
-FROM alpine:3.18
+FROM alpine:3.19
 
 COPY --from=builder /go/bin/immich-exporter /go/bin/immich-exporter
-COPY package.json /go/bin/
 
 WORKDIR /go/bin
 

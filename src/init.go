@@ -1,11 +1,10 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
 	"fmt"
-	immich "immich-exp/src/immich"
-	"immich-exp/src/models"
+	immich "immich-exp/immich"
+	"immich-exp/models"
 
 	"net/http"
 	"strconv"
@@ -21,15 +20,26 @@ import (
 
 const DEFAULTPORT = 8090
 
+var (
+	Version     = "dev"
+	Author      = "martabal"
+	ProjectName = "immich-exporter"
+)
+
 func main() {
 	loadenv()
-	projectinfo()
+	fmt.Printf("%s (version %s)\n", ProjectName, Version)
+	fmt.Println("Author: ", Author)
+	fmt.Println("Using log level: ", log.GetLevel())
 	log.Info("Immich URL: ", models.Getbaseurl())
 	log.Info("Started")
 	http.HandleFunc("/metrics", metrics)
 	addr := ":" + strconv.Itoa(models.GetPort())
 	log.Info("Listening on port ", models.GetPort())
-	http.ListenAndServe(addr, nil)
+	err := http.ListenAndServe(addr, nil)
+	if err != nil {
+		log.Fatalln(err)
+	}
 }
 
 func metrics(w http.ResponseWriter, r *http.Request) {
@@ -38,25 +48,6 @@ func metrics(w http.ResponseWriter, r *http.Request) {
 	immich.Allrequests(registry)
 	h := promhttp.HandlerFor(registry, promhttp.HandlerOpts{})
 	h.ServeHTTP(w, r)
-}
-
-func projectinfo() {
-	fileContent, err := os.ReadFile("./package.json")
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
-
-	var res map[string]interface{}
-	err = json.Unmarshal(fileContent, &res)
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
-
-	fmt.Print(res["name"], " (version ", res["version"], ")\n")
-	fmt.Print("Author: ", res["author"], "\n")
-	fmt.Print("Using log level: ", log.GetLevel(), "\n")
 }
 
 func loadenv() {
